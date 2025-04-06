@@ -1,4 +1,4 @@
-package java.org;
+package org.Organism;
 
 public interface Organism {
 }
