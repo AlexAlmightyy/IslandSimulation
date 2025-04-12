@@ -1,0 +1,11 @@
+package islandSimulation.Organism.Animals.Predator;
+
+import islandSimulation.Organism.Animals.Animal;
+
+
+public abstract class Predator extends Animal {
+
+    public Predator(double weight, int maxCount, int speed, double foodNeed) {
+        super(weight, maxCount, speed, foodNeed);
+    }
+}
