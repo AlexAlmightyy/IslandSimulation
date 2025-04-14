@@ -11,6 +11,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @EqualsAndHashCode
 public abstract class Organism{
     private static final AtomicInteger idCounter = new AtomicInteger(0);
+    private int x;
+    private int y;
     private final int id;
     private double weight;
     private final int maxCount;
@@ -21,10 +23,18 @@ public abstract class Organism{
         this.maxCount = maxCount;
     }
 
+    public void setCoordinates(int x, int y){
+        this.x = x;
+        this.y = y;
+    }
+
     @Override
     public String toString() {
         return "Organism{" +
-                "id=" + id +
+                "Type" + this.getClass().getName() +
+                " x=" + x +
+                ", y=" + y +
+                ", id=" + id +
                 ", weight=" + weight +
                 ", maxCount=" + maxCount +
                 '}';

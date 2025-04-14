@@ -10,13 +10,21 @@ import java.util.List;
 @Getter
 @Setter
 public class Cell {
-    int x;
-    int y;
+    private int x;
+    private int y;
 
+    public Cell(int x, int y){
+        this.x = x;
+        this.y = y;
+    }
     List<Organism> residents = new ArrayList<>();
 
     public void addOrganism(Organism organism){
         residents.add(organism);
+    }
+
+    public void removeOrganism(Organism organism) {
+        residents.remove(organism);
     }
 
 }

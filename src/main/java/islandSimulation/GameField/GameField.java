@@ -25,7 +25,8 @@ public class GameField {
     public void init(){
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-//                initPredators(i, j);
+                cells[i][j] = new Cell(i, j);
+                initPredators(i, j);
                 initHerbivores(i, j);
                 initPlants(i, j);
             }
@@ -58,9 +59,11 @@ public class GameField {
         addManyOrganism(cells[i][j], Eagle::new, ThreadLocalRandom.current().nextInt(20));
     }
 
-    private void addManyOrganism(Cell cell, Supplier<Organism> factory, int count){
+    private <T extends Organism> void addManyOrganism(Cell cell, Supplier<T> factory, int count){
         for (int i = 0; i < count; i++) {
-            cell.addOrganism(factory.get());
+            T organism = factory.get();
+            organism.setCoordinates(cell.getX(), cell.getY());
+            cell.addOrganism(organism);
         }
     }
 
