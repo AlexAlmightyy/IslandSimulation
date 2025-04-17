@@ -2,6 +2,6 @@ package islandSimulation.Interfaces;
 
 import islandSimulation.GameField.GameField;
 
-public interface Eatable {
-    void eat(GameField field);
+public interface Depletion {
+    void deplete(GameField field);
 }
