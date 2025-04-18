@@ -23,7 +23,7 @@ public class AnimalSupportService {
         return new int[]{newX, newY};
     }
 
-    public static boolean isCoordinatesValidToMove(int x, int y, GameField field) {
+    public static boolean isCoordinatesValid(int x, int y, GameField field) {
         return x >= 0 && y >= 0 && x < field.getWidth() && y < field.getHeight();
     }
 

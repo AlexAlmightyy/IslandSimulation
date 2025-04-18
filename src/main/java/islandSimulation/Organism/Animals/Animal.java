@@ -20,6 +20,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @EqualsAndHashCode(callSuper = true)
 @Getter
 public class Animal extends Organism implements Movable, Reproducable, Eatable, Depletion {
+    private Gender gender;
     private int speed;
     private double foodNeed;
     private Map<String, Double> eatChances = new HashMap<>();
@@ -31,6 +32,7 @@ public class Animal extends Organism implements Movable, Reproducable, Eatable, 
                   int speed,
                   double foodNeed) {
         super(weight, maxCount);
+        this.gender = ThreadLocalRandom.current().nextBoolean() ? Gender.MALE : Gender.FEMALE;
         this.speed = speed;
         this.foodNeed = foodNeed;
     }
@@ -60,8 +62,38 @@ public class Animal extends Organism implements Movable, Reproducable, Eatable, 
         }
     }
 
-    public void reproduce() {
+    public void reproduce(GameField field) {
+        if(hasReproduced) return;
+        Cell currentCell = field.getCells()[this.getX()][this.getY()];
+        List<Organism> residents = currentCell.getResidents();
+        List<Animal> potentialPartners = residents.stream()
+                .filter(o -> o instanceof Animal)
+                .map(o -> (Animal)o)
+                .filter(a -> isValidToReproduce(a))
+                .toList();
+        if(potentialPartners.isEmpty()) return;
+        Animal partner = potentialPartners.get(ThreadLocalRandom.current().nextInt(potentialPartners.size()));
+        int offspringCount = ThreadLocalRandom.current().nextInt(1,3);
+        for (int i = 0; i < offspringCount; i++) {
+            if (AnimalSupportService.getCountOfAnimalInCell(currentCell, this) < this.getMaxCount()) {
+                try{
+                    Animal child = this.getClass().getDeclaredConstructor().newInstance();
+                    currentCell.addOrganism(child);
+                    child.setCoordinates(this.getX(), this.getY());
+                } catch (Exception e) {
+                    System.err.println("Error while reproducing" + e);
+                }
+            }
+        }
+        this.setHasReproduced(true);
+        partner.setHasReproduced(true);
+    }
 
+    private boolean isValidToReproduce(Animal secondAnimal) {
+        return this.getClass() == secondAnimal.getClass()
+                && this != secondAnimal
+                && this.gender != secondAnimal.gender
+                && !secondAnimal.hasReproduced;
     }
 
 
@@ -69,7 +101,7 @@ public class Animal extends Organism implements Movable, Reproducable, Eatable, 
         int timesToMove = ThreadLocalRandom.current().nextInt(speed);
         for (int i = 0; i < timesToMove; i++) {
             int[] newCoordinates = AnimalSupportService.getNewCoordinates(this.getX(), this.getY());
-            if(AnimalSupportService.isCoordinatesValidToMove(newCoordinates[0], newCoordinates[1], field)){
+            if(AnimalSupportService.isCoordinatesValid(newCoordinates[0], newCoordinates[1], field)){
                 field.getCells()[this.getX()][this.getY()].removeOrganism(this);
                 this.setCoordinates(newCoordinates[0], newCoordinates[1]);
                 field.getCells()[newCoordinates[0]][newCoordinates[1]].addOrganism(this);
