@@ -50,10 +50,13 @@ public class Animal extends Organism implements Movable, Reproducable, Eatable, 
 
     public void eat(GameField field) {
         Cell currentCell = field.getCells()[this.getX()][this.getY()];
-        List<Organism> currentCellResidents = currentCell.getResidentsCopy();
+        List<Organism> currentCellResidents = currentCell.getResidents();
         List<Organism> others = currentCellResidents.stream()
                 .filter(o->o!=this)
                 .toList();
+        if(others.size() == 0){
+            return;
+        }
         Organism prey = others.get(ThreadLocalRandom.current().nextInt(others.size()));
         int currentChance = ThreadLocalRandom.current().nextInt(100);
         if(currentChance <= getEatChances(prey) && currentChance > 0){
@@ -64,6 +67,7 @@ public class Animal extends Organism implements Movable, Reproducable, Eatable, 
             }
             currentCellResidents.remove(prey);
         }
+//        System.out.println("Animal was eating ! " + this.getClass().getSimpleName());
     }
 
     public void reproduce(GameField field) {
@@ -91,6 +95,7 @@ public class Animal extends Organism implements Movable, Reproducable, Eatable, 
         }
         this.setHasReproduced(true);
         partner.setHasReproduced(true);
+//        System.out.println(this.getClass().getSimpleName() + " has reproduced");
     }
 
     private boolean isValidToReproduce(Animal secondAnimal) {
@@ -106,9 +111,9 @@ public class Animal extends Organism implements Movable, Reproducable, Eatable, 
         for (int i = 0; i < timesToMove; i++) {
             int[] newCoordinates = AnimalSupportService.getNewCoordinates(this.getX(), this.getY());
             if(AnimalSupportService.isCoordinatesValid(newCoordinates[0], newCoordinates[1], field)){
-                field.getCells()[this.getX()][this.getY()].removeOrganism(this);
                 this.setCoordinates(newCoordinates[0], newCoordinates[1]);
                 field.getCells()[newCoordinates[0]][newCoordinates[1]].addOrganism(this);
+                field.getCells()[this.getX()][this.getY()].removeOrganism(this);
             }
         }
     }

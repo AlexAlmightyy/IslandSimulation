@@ -44,25 +44,25 @@ public class GameField {
     }
 
     private void initHerbivores(int i, int j) {
-        addManyOrganism(cells[i][j], Boar::new, ThreadLocalRandom.current().nextInt(50));
-        addManyOrganism(cells[i][j], Buffalo::new, ThreadLocalRandom.current().nextInt(10));
-        addManyOrganism(cells[i][j], Caterpillar::new, ThreadLocalRandom.current().nextInt(1000));
-        addManyOrganism(cells[i][j], Deer::new, ThreadLocalRandom.current().nextInt(20));
-        addManyOrganism(cells[i][j], Duck::new, ThreadLocalRandom.current().nextInt(200));
-        addManyOrganism(cells[i][j], Goat::new, ThreadLocalRandom.current().nextInt(140));
-        addManyOrganism(cells[i][j], Horse::new, ThreadLocalRandom.current().nextInt(20));
-        addManyOrganism(cells[i][j], Mouse::new, ThreadLocalRandom.current().nextInt(500));
-        addManyOrganism(cells[i][j], Rabbit::new, ThreadLocalRandom.current().nextInt(150));
-        addManyOrganism(cells[i][j], Sheep::new, ThreadLocalRandom.current().nextInt(140));
+        addManyOrganism(cells[i][j], Boar::new, ThreadLocalRandom.current().nextInt(20));
+        addManyOrganism(cells[i][j], Buffalo::new, ThreadLocalRandom.current().nextInt(4));
+        addManyOrganism(cells[i][j], Caterpillar::new, ThreadLocalRandom.current().nextInt(200));
+        addManyOrganism(cells[i][j], Deer::new, ThreadLocalRandom.current().nextInt(8));
+        addManyOrganism(cells[i][j], Duck::new, ThreadLocalRandom.current().nextInt(80));
+        addManyOrganism(cells[i][j], Goat::new, ThreadLocalRandom.current().nextInt(56));
+        addManyOrganism(cells[i][j], Horse::new, ThreadLocalRandom.current().nextInt(8));
+        addManyOrganism(cells[i][j], Mouse::new, ThreadLocalRandom.current().nextInt(200));
+        addManyOrganism(cells[i][j], Rabbit::new, ThreadLocalRandom.current().nextInt(60));
+        addManyOrganism(cells[i][j], Sheep::new, ThreadLocalRandom.current().nextInt(56));
 
     }
 
     private void initPredators(int i, int j) {
-        addManyOrganism(cells[i][j], Wolf::new, ThreadLocalRandom.current().nextInt(30));
-        addManyOrganism(cells[i][j], Fox::new, ThreadLocalRandom.current().nextInt(30));
-        addManyOrganism(cells[i][j], Bear::new, ThreadLocalRandom.current().nextInt(5));
-        addManyOrganism(cells[i][j], Boa::new, ThreadLocalRandom.current().nextInt(30));
-        addManyOrganism(cells[i][j], Eagle::new, ThreadLocalRandom.current().nextInt(20));
+        addManyOrganism(cells[i][j], Wolf::new, ThreadLocalRandom.current().nextInt(12));
+        addManyOrganism(cells[i][j], Fox::new, ThreadLocalRandom.current().nextInt(12));
+        addManyOrganism(cells[i][j], Bear::new, ThreadLocalRandom.current().nextInt(2));
+        addManyOrganism(cells[i][j], Boa::new, ThreadLocalRandom.current().nextInt(12));
+        addManyOrganism(cells[i][j], Eagle::new, ThreadLocalRandom.current().nextInt(8));
     }
 
     public void growPlants(){

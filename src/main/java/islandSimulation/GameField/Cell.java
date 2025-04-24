@@ -19,11 +19,11 @@ public class Cell {
         this.y = y;
     }
 
+    List<Organism> residents = new ArrayList<>();
+
     public List<Organism> getResidentsCopy() {
         return new ArrayList<>(residents);
     }
-
-    List<Organism> residents = new ArrayList<>();
 
     public synchronized void addOrganism(Organism organism){
         residents.add(organism);
@@ -32,17 +32,4 @@ public class Cell {
     public synchronized void removeOrganism(Organism organism) {
         residents.remove(organism);
     }
-
-    public synchronized void simulateResidents(GameField field){
-        List<Organism> copyOfResidents = new ArrayList<>(residents);
-        for (Organism resident : copyOfResidents) {
-            if(resident instanceof Animal animal){
-                animal.move(field);
-                animal.eat(field);
-                animal.reproduce(field);
-                animal.deplete(field);
-            }
-        }
-    }
-
 }
