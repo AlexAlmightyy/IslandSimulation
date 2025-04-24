@@ -4,6 +4,7 @@ import islandSimulation.GameField.Cell;
 import islandSimulation.GameField.GameField;
 import islandSimulation.Organism.Organism;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -28,7 +29,7 @@ public class AnimalSupportService {
     }
 
     public static int getCountOfAnimalInCell(Cell cell, Organism organism){
-        List<Organism> residents = cell.getResidents();
+        List<Organism> residents = new ArrayList<>(cell.getResidentsCopy());
         int count = 0;
         for (Organism resident : residents) {
             if(resident != null && resident.getClass().equals(organism.getClass())){

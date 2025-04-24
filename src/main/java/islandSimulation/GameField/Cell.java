@@ -1,5 +1,6 @@
 package islandSimulation.GameField;
 
+import islandSimulation.Organism.Animals.Animal;
 import islandSimulation.Organism.Organism;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,14 +18,31 @@ public class Cell {
         this.x = x;
         this.y = y;
     }
+
+    public List<Organism> getResidentsCopy() {
+        return new ArrayList<>(residents);
+    }
+
     List<Organism> residents = new ArrayList<>();
 
-    public void addOrganism(Organism organism){
+    public synchronized void addOrganism(Organism organism){
         residents.add(organism);
     }
 
-    public void removeOrganism(Organism organism) {
+    public synchronized void removeOrganism(Organism organism) {
         residents.remove(organism);
+    }
+
+    public synchronized void simulateResidents(GameField field){
+        List<Organism> copyOfResidents = new ArrayList<>(residents);
+        for (Organism resident : copyOfResidents) {
+            if(resident instanceof Animal animal){
+                animal.move(field);
+                animal.eat(field);
+                animal.reproduce(field);
+                animal.deplete(field);
+            }
+        }
     }
 
 }

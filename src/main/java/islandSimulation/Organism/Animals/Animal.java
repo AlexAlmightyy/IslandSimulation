@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 import islandSimulation.Organism.Organism;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,8 +50,11 @@ public class Animal extends Organism implements Movable, Reproducable, Eatable, 
 
     public void eat(GameField field) {
         Cell currentCell = field.getCells()[this.getX()][this.getY()];
-        List<Organism> currentCellResidents = currentCell.getResidents();
-        Organism prey = currentCellResidents.get(ThreadLocalRandom.current().nextInt(currentCellResidents.size()));
+        List<Organism> currentCellResidents = currentCell.getResidentsCopy();
+        List<Organism> others = currentCellResidents.stream()
+                .filter(o->o!=this)
+                .toList();
+        Organism prey = others.get(ThreadLocalRandom.current().nextInt(others.size()));
         int currentChance = ThreadLocalRandom.current().nextInt(100);
         if(currentChance <= getEatChances(prey) && currentChance > 0){
             if(prey.getWeight() >= this.foodNeed){
@@ -65,8 +69,8 @@ public class Animal extends Organism implements Movable, Reproducable, Eatable, 
     public void reproduce(GameField field) {
         if(hasReproduced) return;
         Cell currentCell = field.getCells()[this.getX()][this.getY()];
-        List<Organism> residents = currentCell.getResidents();
-        List<Animal> potentialPartners = residents.stream()
+        List<Organism> residents = currentCell.getResidentsCopy();
+        List<Animal> potentialPartners = new ArrayList<>(residents).stream()
                 .filter(o -> o instanceof Animal)
                 .map(o -> (Animal)o)
                 .filter(a -> isValidToReproduce(a))
@@ -81,7 +85,7 @@ public class Animal extends Organism implements Movable, Reproducable, Eatable, 
                     currentCell.addOrganism(child);
                     child.setCoordinates(this.getX(), this.getY());
                 } catch (Exception e) {
-                    System.err.println("Error while reproducing" + e);
+                    System.err.println("Error while making a offspring for " + this.getClass().getSimpleName() + ": " + e.getMessage());
                 }
             }
         }
@@ -98,7 +102,7 @@ public class Animal extends Organism implements Movable, Reproducable, Eatable, 
 
 
     public void move(GameField field) {
-        int timesToMove = ThreadLocalRandom.current().nextInt(speed);
+        int timesToMove = speed > 0 ? ThreadLocalRandom.current().nextInt(speed) : 0;
         for (int i = 0; i < timesToMove; i++) {
             int[] newCoordinates = AnimalSupportService.getNewCoordinates(this.getX(), this.getY());
             if(AnimalSupportService.isCoordinatesValid(newCoordinates[0], newCoordinates[1], field)){

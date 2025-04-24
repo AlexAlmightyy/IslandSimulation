@@ -3,6 +3,7 @@ package islandSimulation.GameField;
 
 import islandSimulation.Organism.Organism;
 import islandSimulation.Organism.Plants.Grass;
+import islandSimulation.Organism.Plants.Plant;
 import lombok.Getter;
 import islandSimulation.Organism.Animals.Herbivore.*;
 import islandSimulation.Organism.Animals.Predator.*;
@@ -14,6 +15,11 @@ import java.util.function.Supplier;
 public class GameField {
     private int width;
     private int height;
+
+    public synchronized Cell[][] getCells() {
+        return cells;
+    }
+
     private Cell[][] cells;
 
     public GameField(int width, int height) {
@@ -28,13 +34,13 @@ public class GameField {
                 cells[i][j] = new Cell(i, j);
                 initPredators(i, j);
                 initHerbivores(i, j);
-                initPlants(i, j);
             }
         }
+        initPlants();
     }
 
-    private void initPlants(int i, int j) {
-        addManyOrganism(cells[i][j], Grass::new, ThreadLocalRandom.current().nextInt(200));
+    private void initPlants() {
+        growPlants();
     }
 
     private void initHerbivores(int i, int j) {
@@ -57,6 +63,15 @@ public class GameField {
         addManyOrganism(cells[i][j], Bear::new, ThreadLocalRandom.current().nextInt(5));
         addManyOrganism(cells[i][j], Boa::new, ThreadLocalRandom.current().nextInt(30));
         addManyOrganism(cells[i][j], Eagle::new, ThreadLocalRandom.current().nextInt(20));
+    }
+
+    public void growPlants(){
+        for (int i = 0; i < cells.length; i++) {
+            for (int j = 0; j < cells[i].length; j++) {
+                int grassCountInCurrCell = (int)cells[i][j].getResidentsCopy().stream().filter(o -> o instanceof Plant).count();
+                addManyOrganism(cells[i][j], Grass::new, ThreadLocalRandom.current().nextInt(200 - grassCountInCurrCell));
+            }
+        }
     }
 
     private <T extends Organism> void addManyOrganism(Cell cell, Supplier<T> factory, int count){
