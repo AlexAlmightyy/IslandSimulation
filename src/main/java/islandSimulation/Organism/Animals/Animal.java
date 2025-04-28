@@ -46,18 +46,16 @@ public class Animal extends Organism implements Movable, Reproducable, Eatable, 
         String prayName = prey.getClass().getSimpleName();
         return eatChances.getOrDefault(prayName, 0.0);
     }
-
-
+    
     public void eat(GameField field) {
         Cell currentCell = field.getCells()[this.getX()][this.getY()];
         List<Organism> currentCellResidents = currentCell.getResidents();
-        List<Organism> others = currentCellResidents.stream()
-                .filter(o->o!=this)
-                .toList();
-        if(others.size() == 0){
-            return;
-        }
-        Organism prey = others.get(ThreadLocalRandom.current().nextInt(others.size()));
+        Organism prey = getPrey(currentCellResidents);
+        if (prey == null) return;
+        eatThePrey(prey, currentCellResidents);
+    }
+
+    private void eatThePrey(Organism prey, List<Organism> currentCellResidents) {
         int currentChance = ThreadLocalRandom.current().nextInt(100);
         if(currentChance <= getEatChances(prey) && currentChance > 0){
             if(prey.getWeight() >= this.foodNeed){
@@ -67,20 +65,31 @@ public class Animal extends Organism implements Movable, Reproducable, Eatable, 
             }
             currentCellResidents.remove(prey);
         }
-//        System.out.println("Animal was eating ! " + this.getClass().getSimpleName());
+    }
+
+    private Organism getPrey(List<Organism> currentCellResidents) {
+        List<Organism> others = currentCellResidents.stream()
+                .filter(o->o!=this)
+                .toList();
+        if(others.isEmpty()){
+            return null;
+        }
+        Organism prey = others.get(ThreadLocalRandom.current().nextInt(others.size()));
+        return prey;
     }
 
     public void reproduce(GameField field) {
         if(hasReproduced) return;
         Cell currentCell = field.getCells()[this.getX()][this.getY()];
-        List<Organism> residents = currentCell.getResidentsCopy();
-        List<Animal> potentialPartners = new ArrayList<>(residents).stream()
-                .filter(o -> o instanceof Animal)
-                .map(o -> (Animal)o)
-                .filter(a -> isValidToReproduce(a))
-                .toList();
+        List<Animal> potentialPartners = getPotentialPartners(currentCell);
         if(potentialPartners.isEmpty()) return;
         Animal partner = potentialPartners.get(ThreadLocalRandom.current().nextInt(potentialPartners.size()));
+        makeReproduction(currentCell);
+        this.setHasReproduced(true);
+        partner.setHasReproduced(true);
+    }
+
+    private void makeReproduction(Cell currentCell) {
         int offspringCount = ThreadLocalRandom.current().nextInt(1,3);
         for (int i = 0; i < offspringCount; i++) {
             if (AnimalSupportService.getCountOfAnimalInCell(currentCell, this) < this.getMaxCount()) {
@@ -93,9 +102,15 @@ public class Animal extends Organism implements Movable, Reproducable, Eatable, 
                 }
             }
         }
-        this.setHasReproduced(true);
-        partner.setHasReproduced(true);
-//        System.out.println(this.getClass().getSimpleName() + " has reproduced");
+    }
+
+    private List<Animal> getPotentialPartners(Cell currentCell) {
+        List<Organism> residents = currentCell.getResidentsCopy();
+        return new ArrayList<>(residents).stream()
+                .filter(o -> o instanceof Animal)
+                .map(o -> (Animal)o)
+                .filter(a -> isValidToReproduce(a))
+                .toList();
     }
 
     private boolean isValidToReproduce(Animal secondAnimal) {

@@ -11,12 +11,11 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class IslandSimulator {
     private int tickCounter = 0;
-    private final int maxTicks = 1000;
+    private final int maxTicks = 100;
     private final GameField field;
     private final ScheduledExecutorService plantScheduler = Executors.newScheduledThreadPool(1);
     private final ExecutorService animalExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -35,7 +34,6 @@ public class IslandSimulator {
             try {
                 simulateAnimalsLife(cells);
                 Thread.sleep(500);
-
                 tickCounter++;
                 System.out.println("Tick #" + tickCounter);
                 StatisticService.printAnimalStatistic(field);
@@ -62,7 +60,6 @@ public class IslandSimulator {
 
     private void simulateAnimalsLife(Cell[][] cells) {
         List<Animal> allAnimals = new ArrayList<>();
-
         for (Cell[] row : cells) {
             for (Cell cell : row) {
                 synchronized (cell){
@@ -75,7 +72,6 @@ public class IslandSimulator {
                 }
             }
         }
-
         try {
             runPhaseParallel(allAnimals, animal -> animal.move(field));
             runPhaseParallel(allAnimals, animal -> animal.eat(field));
@@ -93,7 +89,6 @@ public class IslandSimulator {
                     action.perform(animal);
                     return null;
                 }).toList();
-
         animalExecutor.invokeAll(tasks);
     }
 
